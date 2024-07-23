@@ -2,7 +2,7 @@
 use crate::core::clipboard::{self, Clipboard};
 use crate::core::event::{self, Event};
 use crate::core::keyboard;
-use crate::core::keyboard::key;
+use crate::core::keyboard::{key, Location};
 use crate::core::layout::{self, Layout};
 use crate::core::mouse;
 use crate::core::renderer;
@@ -761,7 +761,7 @@ impl Update {
                     key,
                     modifiers,
                     text,
-                    ..
+                    location,
                 } if state.is_focused => {
                     match key.as_ref() {
                         keyboard::Key::Named(key::Named::Enter) => {
@@ -770,7 +770,9 @@ impl Update {
                         keyboard::Key::Named(key::Named::Backspace) => {
                             return edit(Edit::Backspace);
                         }
-                        keyboard::Key::Named(key::Named::Delete) => {
+                        keyboard::Key::Named(key::Named::Delete) =>
+                            if location != Location::Numpad || text == None
+                        {
                             return edit(Edit::Delete);
                         }
                         keyboard::Key::Named(key::Named::Escape) => {
